@@ -9,5 +9,10 @@ class Player
 		@hand = []
 	end
 
+	def render_hand
+		@hand.each do |card|
+			print "[#{card.suit}, #{card.value}\n"
+		end
+	end
 
 end
