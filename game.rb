@@ -34,6 +34,11 @@ class Game
 			puts "Your current cards are: "
 			current_player.hand.render
 
+			while current_player.hand.none? { |card| @discard_pile.last.can_accept?(card.suit, card.value) }
+				puts "You have no valid cards.  Please draw."
+				self.draw_card(current_player)
+			end
+
 			begin
 				card_response = self.prompt_for_card(current_player)
 
@@ -45,8 +50,18 @@ class Game
 				retry
 			end
 
+			current_player.hand.each do |card|
+				if card.is_same?(card_response[0], card_response[1])
+					self.discard_card(card)
+				end
+			end
 
+			if self.over?
+				puts "#{current_player} is the winner!"
+			end
 
+			@turn += 1
+		end
 	end
 
 	def prompt_for_card(player)
@@ -61,6 +76,15 @@ class Game
 		end
 
 		card_response
+	end
+
+	def draw_card(player)
+		player.hand << @stock_pile.pop
+	end
+
+	def discard_card(player, card)
+		@discard_pile << card
+		@player -= [card]
 	end
 
 	def over?
