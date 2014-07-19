@@ -10,6 +10,7 @@ class Card
 
 	def can_accept?(suit, value)
 		return true if @suit == suit || @value == value || value == :eight
+		return true if @value == :wild && @suit == suit
 
 		false
 	end

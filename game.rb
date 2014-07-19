@@ -66,7 +66,7 @@ class Game
 			end
 
 			if self.over?
-				puts "#{current_player} is the winner!"
+				puts "#{current_player.name.capitalize} is the winner!"
 			end
 
 			@turn += 1
@@ -93,8 +93,30 @@ class Game
 	end
 
 	def discard_card(player, card)
-		@discard_pile << card
+		if card.value == :eight
+			suit_response = self.prompt_for_wild_card_suit
+			@discard_pile << Card.new(suit_response, :wild)
+		else
+			@discard_pile << card
+		end
+
 		player.hand -= [card]
+	end
+
+	def prompt_for_wild_card_suit
+		begin
+			puts "You played a wild card.  Which suit do you want to set?"
+			suit_response = gets.chomp.to_sym
+
+			if !Deck::SUITS.include?(suit_response)
+				raise InvalidMoveError.new("That suit does not exist.  Try again.")
+			end
+		rescue InvalidMoveError => error
+			puts error.message
+			retry
+		end
+
+		suit_response
 	end
 
 	def over?
