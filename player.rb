@@ -11,8 +11,10 @@ class Player
 
 	def render_hand
 		@hand.each do |card|
-			print "[#{card.suit}, #{card.value}\n"
+			print "[#{card.suit}, #{card.value}]\n"
 		end
+		
+		puts
 	end
 
 end

@@ -9,7 +9,7 @@ class Game
 	def initialize
 		@players = []
 		4.times do |num|
-			@players << Player.new("Player #{num}")
+			@players << Player.new("Player #{num + 1}")
 		end
 
 		@stock_pile = Deck.new.shuffle!
@@ -18,7 +18,7 @@ class Game
 
 		5.times do |num|
 			@players.each do |player|
-				player << @stock_pile.pop
+				player.hand << @stock_pile.pop
 			end
 		end
 
@@ -28,15 +28,17 @@ class Game
 
 	def play
 		until self.over?
+			puts
 			current_player = @players[@turn % 4]
 			puts "#{current_player.name.capitalize}'s turn."
-			puts "#{[@discard_pile.last.suit, @discard_pile.last.value} was the last card."
+			puts "#{[@discard_pile.last.suit, @discard_pile.last.value]} was the last card."
 			puts "Your current cards are: "
-			current_player.hand.render
+			current_player.render_hand
 
 			while current_player.hand.none? { |card| @discard_pile.last.can_accept?(card.suit, card.value) }
 				puts "You have no valid cards.  Please draw."
 				self.draw_card(current_player)
+				current_player.render_hand
 			end
 
 			begin
@@ -52,7 +54,7 @@ class Game
 
 			current_player.hand.each do |card|
 				if card.is_same?(card_response[0], card_response[1])
-					self.discard_card(card)
+					self.discard_card(current_player, card)
 				end
 			end
 
@@ -65,13 +67,14 @@ class Game
 	end
 
 	def prompt_for_card(player)
+		puts
 		puts "Choose a card to discard (suit first, then comma, then card value)"
 		response = gets.chomp
 		card_response = self.parse(response)
 
 		if !Deck::SUITS.include?(card_response[0]) || !Deck::VALUES.include?(card_response[1])
 			raise InvalidMoveError.new("That card does not exist.  Try again.")
-		elsif player.hand.none? { |card| card.can_accept?(card_response[0]) || card.can_accept?(card_response[1]) }
+		elsif player.hand.none? { |card| card.is_same?(card_response[0], card_response[1]) }
 			raise InvalidMoveError.new("You don't have that card.  Try again.")
 		end
 
@@ -84,7 +87,7 @@ class Game
 
 	def discard_card(player, card)
 		@discard_pile << card
-		@player -= [card]
+		player.hand -= [card]
 	end
 
 	def over?
