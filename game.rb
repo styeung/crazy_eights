@@ -23,8 +23,11 @@ class Game
 			end
 		end
 
-		@discard_pile << @stock_pile.pop
-
+		if @stock_pile.pop.value == :eight
+			@discard_pile << Card.new(Deck::SUITS.sample, :wild)
+		else
+			@discard_pile << @stock_pile.pop
+		end
 	end
 
 	def play
@@ -42,11 +45,7 @@ class Game
 			puts "Your current cards are: "
 			current_player.render_hand
 
-			while current_player.hand.none? { |card| @discard_pile.last.can_accept?(card.suit, card.value) }
-				puts "You have no valid cards.  Please draw."
-				self.draw_card(current_player)
-				current_player.render_hand
-			end
+			self.check_or_draw(current_player, current_player.hand)
 
 			begin
 				card_response = self.prompt_for_card(current_player)
@@ -119,10 +118,21 @@ class Game
 		suit_response
 	end
 
+	protected
+
 	def over?
 		return true if @players.any? { |player| player.hand.empty? }
 
 		false
+	end
+
+	#checks if any cards can be played, if not, automatically draws
+	def check_or_draw(player, cards)
+		while cards.none? { |card| @discard_pile.last.can_accept?(card.suit, card.value) }
+			puts "You have no valid cards.  Please draw."
+			self.draw_card(player)
+			player.render_hand
+		end
 	end
 
 	def parse(response)

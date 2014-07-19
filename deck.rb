@@ -19,11 +19,7 @@ class Deck
     :king
   	]
 
-	def initialize
-		@cards = Deck.return_all_cards
-	end
-
-	def self.return_all_cards
+  def self.return_all_cards
 		output_array = []
 
 		SUITS.each do |suit|
@@ -35,9 +31,11 @@ class Deck
 		output_array
 	end
 
+	def initialize
+		@cards = Deck.return_all_cards
+	end
+
 	def shuffle!
 		@cards.shuffle!
 	end
-
-	
 end
