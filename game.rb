@@ -1,5 +1,6 @@
 require_relative 'player'
 require_relative 'deck'
+require 'colorize'
 
 class InvalidMoveError < StandardError
 end
@@ -30,8 +31,14 @@ class Game
 		until self.over?
 			puts
 			current_player = @players[@turn % 4]
+			last_card = @discard_pile.last
 			puts "#{current_player.name.capitalize}'s turn."
-			puts "#{[@discard_pile.last.suit, @discard_pile.last.value]} was the last card."
+			if last_card.suit == :hearts || last_card.suit == :diamonds
+				puts "[#{last_card.suit.to_s.colorize(:red).bold}, #{last_card.value.to_s.colorize(:red).bold}] was the last card."
+			else
+				puts "[#{last_card.suit.to_s.colorize(:black).bold}, #{last_card.value.to_s.colorize(:black).bold}] was the last card."
+			end
+
 			puts "Your current cards are: "
 			current_player.render_hand
 

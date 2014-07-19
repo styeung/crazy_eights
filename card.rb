@@ -1,3 +1,5 @@
+require 'colorize'
+
 class Card
 	attr_accessor :suit, :value
 
@@ -7,13 +9,13 @@ class Card
 	end
 
 	def can_accept?(suit, value)
-		return true if self.suit == suit || self.value == value || value == :eight
+		return true if @suit == suit || @value == value || value == :eight
 
 		false
 	end
 
 	def is_same?(suit, value)
-		return true if self.suit == suit && self.value == value
+		return true if @suit == suit && @value == value
 
 		false
 	end
